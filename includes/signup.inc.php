@@ -1,4 +1,5 @@
 <?php
+// get the data from the form
 if (isset($_POST['signup-submit'])) {
 
     require 'dbh.inc.php';
@@ -11,24 +12,35 @@ if (isset($_POST['signup-submit'])) {
     $passwordRepeat = $_POST['pwd-repeat'];
     $userLevel = $_POST['ulevel'];
 
+// check for empty fields 
     if (empty($username) || empty($usermail) || empty($fName) || empty($lName) || empty($password) || empty($passwordRepeat)) {
         header("Location: ../login.php?error=emptyfields&name=" . $username . "&mail=" . $usermail . "&fname=" . $fName . "&lName=" . $lName);
         exit();
-    } else if (!preg_match("/^[a-zA-Z0-9]*$/", $username) && !filter_var($usermail, FILTER_VALIDATE_EMAIL)) {
+    }
+
+//check for valid email
+ else if (!preg_match("/^[a-zA-Z0-9]*$/", $username) && !filter_var($usermail, FILTER_VALIDATE_EMAIL)) {
         header("Location: ../login.php?error=invalidmailname");
         exit();
     }
+
+//check username
     else if (!preg_match("/^[a-zA-Z0-9]*$/", $username)) {
         header("Location: ../login.php?error?=invalidname&mail=" . $usermail);
-        exit();
-    } else if (!filter_var($usermail, FILTER_VALIDATE_EMAIL)) {
+        exit();} 
+
+    else if (!filter_var($usermail, FILTER_VALIDATE_EMAIL)) {
         header("Location: ../login.php?error=invalidmail&name=" . $username);
-        exit();
-    } else if ($password !== $passwordRepeat) {
+        exit(); } 
+//check if passwords are identical 
+
+else if ($password !== $passwordRepeat) {
         header("Location: ../login.php?error=passwordcheckname=" . $username . "&mail=" . $usermail);
         exit();
     }
 
+
+//check if user already exists 
     $sql = "SELECT username FROM users WHERE username=?;";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
